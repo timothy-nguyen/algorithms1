@@ -63,7 +63,7 @@ public class UF2 {
     // weighted quick union
     private int find3(int p) {
         // follow links back to root
-        while (p != id[p) p = id[p];
+        while (p != id[p]) p = id[p];
         return p;
     }
 
