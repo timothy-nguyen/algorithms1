@@ -47,12 +47,12 @@ public class PercolationStats {
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        // return StdStats.var(results);
-        double ssq = 0;
-        for (int i = 0; i < results.length; i++) {
-            ssq += (results[i] - mean()) * (results[i] - mean());
-        }
-        return ssq / (trials - 1);
+        return StdStats.stddev(results);
+        // double ssq = 0;
+        // for (int i = 0; i < results.length; i++) {
+        //     ssq += (results[i] - mean()) * (results[i] - mean());
+        // }
+        // return ssq / (trials - 1);
     }
 
     // low endpoint of 95% confidence interval
