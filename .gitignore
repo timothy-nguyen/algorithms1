@@ -25,7 +25,9 @@ replay_pid*
 
 .idea/
 .lift/
-.png
-.txt
-.class
-.zip
+*.png
+*.txt
+*.class
+*.zip
+CREDITS
+*.iml
