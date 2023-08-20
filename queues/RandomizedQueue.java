@@ -47,7 +47,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // return a random item (but do not remove it)
     public Item sample() {
-        int i = StdRandom.uniformInt(N + 1);
+        int i = StdRandom.uniformInt(N);
         return q[i];
     }
 
@@ -65,20 +65,22 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private class RandomizedIterator implements Iterator<Item> {
-        private int i = N;
-        private Item[] rq = q;
+        private int i;
+        private Item[] rq;
 
         public RandomizedIterator() {
+            i = N - 1;
+            rq = q;
             StdRandom.shuffle(rq);
         }
 
         public boolean hasNext() {
-            return i > 0;
+            return i >= 0;
         }
 
         public Item next() {
             if (!hasNext()) throw new NoSuchElementException();
-            return rq[--i];
+            return rq[i--];
         }
     }
 
@@ -99,6 +101,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println(queue.size());
         StdOut.println(queue.dequeue());
         StdOut.println(queue.size());
+        StdOut.println();
 
         // test iterator. Should be independent
         for (String s : queue) StdOut.println(s);

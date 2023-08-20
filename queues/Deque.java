@@ -4,6 +4,8 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -15,6 +17,7 @@ public class Deque<Item> implements Iterable<Item> {
     private class Node {
         Item item;
         Node next;
+        Node prev;
     }
 
     // construct an empty deque
@@ -48,6 +51,7 @@ public class Deque<Item> implements Iterable<Item> {
         else {
             first.next = oldfirst;
         }
+        first.prev = null;
         n++;
     }
 
@@ -59,8 +63,14 @@ public class Deque<Item> implements Iterable<Item> {
         last.item = item;
 
         // if stack is empty then first node is same as last node
-        if (isEmpty()) first = last;
-        else oldlast.next = last;
+        if (isEmpty()) {
+            first = last;
+            first.prev = null;
+        }
+        else {
+            oldlast.next = last;
+            last.prev = oldlast;
+        }
         n++;
     }
 
@@ -77,7 +87,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeLast() {
         if (isEmpty()) throw new NoSuchElementException();
         Item item = last.item;
-        last = null;
+        last = last.prev;
         n--;
         return item;
     }
@@ -129,5 +139,40 @@ public class Deque<Item> implements Iterable<Item> {
         StdOut.println("(" + dqFront.size() + " left on dqBack queue)");
         for (String s : dqBack) StdOut.println(s);
         */
+
+        int n = 5;
+        Deque<Integer> queue = new Deque<Integer>();
+        StdOut.println("Empty queue: " + queue.isEmpty());
+
+        // add to back
+        StdOut.println("FIFO: addLast and removeFirst");
+        for (int i = 0; i < n; i++) queue.addLast(i);
+        for (int i : queue) StdOut.println(i); // iterate front to back
+        StdOut.println();
+        for (int i = 0; i < n; i++) {
+            StdOut.println(queue.removeFirst()); // expect same as above
+            StdOut.println("Size: " + queue.size());
+        }
+        StdOut.println(queue.isEmpty());
+
+        // add to front
+        StdOut.println("FIFO: addFirst and removeLast");
+        for (int i = 0; i < n; i++) queue.addFirst(i);
+        for (int i : queue) StdOut.println(i); // LIFO
+        StdOut.println();
+        for (int i = 0; i < n; i++) {
+            StdOut.println(queue.removeLast());
+            StdOut.println("Size: " + queue.size());
+        }
+        StdOut.println(queue.isEmpty());
+
+        // test multiple iterators simultaneously
+        for (int i = 0; i < n; i++) queue.addFirst(i);
+        for (int a : queue) {
+            for (int b : queue) {
+                StdOut.print(a + "-" + b + " ");
+            }
+            StdOut.println();
+        }
     }
 }
