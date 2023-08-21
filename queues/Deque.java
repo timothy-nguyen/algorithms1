@@ -50,6 +50,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
         else {
             first.next = oldfirst;
+            if (last.prev == null) last.prev = first;
         }
         first.prev = null;
         n++;
@@ -114,31 +115,6 @@ public class Deque<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-        /*
-        Deque<String> dqFront = new Deque<String>(); // add items to front
-        Deque<String> dqBack = new Deque<String>();  // add items to back
-
-        while (!StdIn.isEmpty()) {
-            String item = StdIn.readString();
-
-            // add to front of stack. FILO
-            if (!item.equals("-")) dqFront.addFirst(item);
-            else if (!dqFront.isEmpty()) {
-                StdOut.print(dqFront.removeLast() + " ");
-            }
-
-            // add to end of stack. FIFO
-            if (!item.equals("-")) dqBack.addLast(item);
-            else if (!dqBack.isEmpty()) {
-                StdOut.print(dqBack.removeFirst() + " ");
-            }
-        }
-        StdOut.println("(" + dqFront.size() + " left on dqFront queue)");
-        for (String s : dqFront) StdOut.println(s);
-        StdOut.println();
-        StdOut.println("(" + dqFront.size() + " left on dqBack queue)");
-        for (String s : dqBack) StdOut.println(s);
-        */
 
         int n = 5;
         Deque<Integer> queue = new Deque<Integer>();

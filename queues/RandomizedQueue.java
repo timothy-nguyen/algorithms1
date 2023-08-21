@@ -31,14 +31,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // add the item
     public void enqueue(Item item) {
+        if (item == null) throw new IllegalArgumentException();
         if (N == q.length) resize(q.length * 2);
         q[N++] = item;
     }
 
     // remove and return a random item
     public Item dequeue() {
+        if (isEmpty()) throw new NoSuchElementException();
+
         // return last element after shuffle
-        StdRandom.shuffle(q);
+        StdRandom.shuffle(q, 0, N - 1);
         Item item = q[--N];
         q[N] = null;
         if (N > 0 && N == q.length / 4) resize(q.length / 2);
@@ -47,6 +50,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // return a random item (but do not remove it)
     public Item sample() {
+        if (isEmpty()) throw new NoSuchElementException();
         int i = StdRandom.uniformInt(N);
         return q[i];
     }
@@ -71,11 +75,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         public RandomizedIterator() {
             i = N - 1;
             rq = q;
-            StdRandom.shuffle(rq);
+            StdRandom.shuffle(rq, 0, i);
         }
 
         public boolean hasNext() {
             return i >= 0;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
 
         public Item next() {
@@ -94,6 +102,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         queue.enqueue("E");
 
         // test sampling. Size should be the same
+        StdOut.println(queue.isEmpty());
         StdOut.println(queue.sample());
         StdOut.println(queue.size());
 
@@ -104,8 +113,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println();
 
         // test iterator. Should be independent
-        for (String s : queue) StdOut.println(s);
-        StdOut.println();
-        for (String s : queue) StdOut.println(s);
+        int n = 5;
+        RandomizedQueue<Integer> queue2 = new RandomizedQueue<Integer>();
+        for (int i = 0; i < n; i++)
+            queue2.enqueue(i);
+        for (int a : queue2) {
+            for (int b : queue2)
+                StdOut.print(a + "-" + b + " ");
+            StdOut.println();
+        }
     }
 }
