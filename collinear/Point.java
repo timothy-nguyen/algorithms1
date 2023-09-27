@@ -62,9 +62,9 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
-        if (this.y == that.y) return +0.0;                     // point is horizontal
-        if (this.x == that.x) return Double.POSITIVE_INFINITY; // point is vertical
         if (this.compareTo(that) == 0) return Double.NEGATIVE_INFINITY;
+        if (this.x == that.x) return Double.POSITIVE_INFINITY; // point is vertical
+        if (this.y == that.y) return +0.0;                     // point is horizontal
         return ((double) (that.y - this.y) / (that.x - this.x));
     }
 
@@ -172,5 +172,12 @@ public class Point implements Comparable<Point> {
         StdOut.println(new Point(18000, 10000).compareTo(new Point(19000, 10000))); // -1
         StdOut.println(new Point(19000, 10000).compareTo(new Point(21000, 10000))); // -1
         StdOut.println(new Point(21000, 10000).compareTo(new Point(32000, 10000))); // -1
+
+        StdOut.println(new Point(21000, 10000).slopeTo(
+                new Point(21000, 10000))); // -Infinity. Slope with itself
+        StdOut.println(
+                new Point(25000, 10000).slopeTo(new Point(21000, 10000))); // +0. Horizontal line
+        StdOut.println(
+                new Point(10000, 15000).slopeTo(new Point(10000, 10000))); // +0. Vertical line
     }
 }
