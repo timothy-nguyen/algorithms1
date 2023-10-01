@@ -13,6 +13,7 @@ public class BruteCollinearPoints {
         for (int p = 1; p < points.length; p++)
             if (points[0].compareTo(points[p]) == 0) throw new IllegalArgumentException();
 
+        // StdOut.println(Arrays.toString(points));
         Arrays.sort(points);
         // StdOut.println(Arrays.toString(points));
 
@@ -20,10 +21,10 @@ public class BruteCollinearPoints {
         this.segments = new LineSegment[(points.length * (points.length - 1)) / 2];
 
         // iterate through each 4 tuple of points
-        for (int i = 0; i < points.length - 4; i++)
-            for (int j = i + 1; j < points.length - 3; j++)
-                for (int k = j + 1; k < points.length - 2; k++)
-                    for (int m = k + 1; m < points.length - 1; m++) {
+        for (int i = 0; i < points.length; i++)
+            for (int j = i + 1; j < points.length; j++)
+                for (int k = j + 1; k < points.length; k++)
+                    for (int m = k + 1; m < points.length; m++) {
 
                         // points are collinear if
                         // 1. the slopes between inner segments are equal
@@ -32,6 +33,11 @@ public class BruteCollinearPoints {
                         double slopePQ = points[i].slopeTo(points[j]);
                         double slopePR = points[i].slopeTo(points[k]);
                         double slopePS = points[i].slopeTo(points[m]);
+                        // StdOut.println(points[i].toString() + " " +
+                        //                        points[j].toString() + " " +
+                        //                        points[k].toString() + " " +
+                        //                        points[m].toString());
+
                         boolean equalSlope = (slopePQ == slopePR && slopePR == slopePS);
 
                         // If equal slopes then the maximal endpoints

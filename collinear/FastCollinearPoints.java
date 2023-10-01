@@ -8,6 +8,7 @@ public class FastCollinearPoints {
     private LineSegment[] segments; // collinear line segments
     private int n = 0;              // number of line segments
 
+
     public FastCollinearPoints(Point[] points) {
         if (points == null) throw new IllegalArgumentException();
         for (int p = 1; p < points.length; p++)
@@ -20,35 +21,61 @@ public class FastCollinearPoints {
         Point[] pointsStatic = new Point[points.length];
         for (int i = 0; i < points.length; i++) pointsStatic[i] = points[i];
         Arrays.sort(pointsStatic);
-        Arrays.sort(points);
-        
+
         for (int p = 0; p < pointsStatic.length; p++) {
-            Point pt = pointsStatic[p];
-            StdOut.println(pt.toString());
+            Point origin = pointsStatic[p];
+            Arrays.sort(points, origin.slopeOrder());
 
-            // Sort by slope to point
-            StdOut.println("Pre-slope sort " + Arrays.toString(points));
-            Arrays.sort(points, 0, points.length, pt.slopeOrder());
-            StdOut.println("Post-slope sort " + Arrays.toString(points));
-            StdOut.println(pt.slopeTo(points[0]) + " " +
-                                   pt.slopeTo(points[1]) + " " +
-                                   pt.slopeTo(points[2]) + " " +
-                                   pt.slopeTo(points[3]));
+            // debug
+            // StdOut.println();
+            // StdOut.println("Origin: " + origin);
+            // StdOut.println("Slope sort: " + Arrays.toString(points));
+            // for (Point r : points) StdOut.print(origin.slopeTo(r) + " ");
+            // StdOut.println();
 
-            // check if 3+ adjacent points in sorted order have equal slopes
-            double slopePQ = points[0].slopeTo(points[1]);
-            double slopePR = points[0].slopeTo(points[2]);
-            double slopePS = points[0].slopeTo(points[3]);
-            StdOut.println(slopePQ + " " + slopePR + " " + slopePS);
+            int lo = 1;
+            int hi = 1;
+
+            double initSlope = origin.slopeTo(points[1]);
+            for (int q = 2; q < points.length; q++) {
+                double slope = origin.slopeTo(points[q]);
+
+                if (slope == initSlope) {
+                    hi += 1;
+                }
+                else {
+                    if (hi - lo >= 2) {
+                        // if segment is length 3 then check if maximal points
+                        Point[] segPoints = new Point[hi - lo + 2];
+                        segPoints[0] = origin;
+                        int segN = 1;
+                        for (int j = lo; j <= hi; j++) {
+                            segPoints[segN++] = points[j];
+                        }
+
+                        // debug
+                        // StdOut.println("q: " + q);
+                        // StdOut.println(lo + " " + hi);
+                        // StdOut.println("Possible segment: " + Arrays.toString(segPoints));
+                        // Arrays.sort(segPoints);
+                        // StdOut.println("Possible segment (sort): " + Arrays.toString(segPoints));
+                        // for (Point s : segPoints) StdOut.print(origin.slopeTo(s) + " ");
+                        // StdOut.println();
+
+                        Arrays.sort(segPoints);
+                        if (origin.compareTo(segPoints[0]) == 0) {
+                            this.segments[n++] = new LineSegment(segPoints[0],
+                                                                 segPoints[segPoints.length - 1]);
+                        }
+                    }
+
+                    // reset initial slope and increment lo and hi
+                    initSlope = slope;
+                    lo = q;
+                    hi = q;
+                }
 
 
-            // check if point is in the middle. Then it is not a maximal line
-            boolean isMiddle = pt.compareTo(points[0]) > 0 && pt.compareTo(points[3]) < 0;
-            StdOut.println(isMiddle);
-            StdOut.println();
-
-            if (slopePQ == slopePR && slopePR == slopePS && !isMiddle) {
-                this.segments[n++] = new LineSegment(points[0], points[3]);
             }
         }
 
@@ -87,7 +114,6 @@ public class FastCollinearPoints {
 
         // print and draw the line segments
         FastCollinearPoints collinear = new FastCollinearPoints(points);
-
 
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);

@@ -141,43 +141,30 @@ public class Point implements Comparable<Point> {
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        // slope = 1
-        Point p1 = new Point(1, 1);
-        Point p2 = new Point(2, 2);
-        StdOut.println(p1.slopeTo(p2));
+        // test if Array.sort() is stable
+        Point[] points = {
+                new Point(1, 1),
+                new Point(10, 10),
+                new Point(3, 3),
+                new Point(2, 2),
+                new Point(1, 2),
+                new Point(12, 34),
+                new Point(4, 2)
+        };
+        // sort by natural order
+        Arrays.sort(points);
+        StdOut.println("Natural order sort: " + Arrays.toString(points));
+        for (int p = 0; p < points.length; p++)
+            StdOut.print(new Point(1, 1).slopeTo(points[p]) + " ");
+        StdOut.println();
 
-        // compare by y coord
-        StdOut.println(p1.compareTo(p2));
+        // sort by slopes relative to (1, 1)
+        Arrays.sort(points, new Point(1, 1).slopeOrder());
+        StdOut.println("Slope order sort: " + Arrays.toString(points));
+        for (int p = 0; p < points.length; p++)
+            StdOut.print(new Point(1, 1).slopeTo(points[p]) + " ");
+        StdOut.println();
 
-        // sort array of points
-        Point q0 = new Point(0, 0);
-        Point q1 = new Point(+2, +1); // slope +0.5
-        Point q2 = new Point(-1, +1); // slope -1
-        Point q3 = new Point(-1, -1); // slope +1
-        Point q4 = new Point(+3, +3); // slope +3
-
-        Point[] pointArray = { q1, q2, q3, q4 };
-        StdOut.println("Pre-sorted Array:");
-        for (Point p : pointArray) StdOut.println(p);
-        Arrays.sort(pointArray, 0, pointArray.length, q0.slopeOrder());
-        StdOut.println("Sorted Array:");
-        for (Point p : pointArray) StdOut.println(p);
-
-        // Check compareTo method
-        StdOut.println(new Point(18000, 10000).compareTo(new Point(32000, 10000))); // -1
-        StdOut.println(new Point(40000, 10000).compareTo(new Point(32000, 10000))); // +1
-        StdOut.println(new Point(1234, 5678).compareTo(new Point(32000, 10000)));   // -1
-        StdOut.println(new Point(1234, 5678).compareTo(new Point(1234, 5678)));     // 0
-
-        StdOut.println(new Point(18000, 10000).compareTo(new Point(19000, 10000))); // -1
-        StdOut.println(new Point(19000, 10000).compareTo(new Point(21000, 10000))); // -1
-        StdOut.println(new Point(21000, 10000).compareTo(new Point(32000, 10000))); // -1
-
-        StdOut.println(new Point(21000, 10000).slopeTo(
-                new Point(21000, 10000))); // -Infinity. Slope with itself
-        StdOut.println(
-                new Point(25000, 10000).slopeTo(new Point(21000, 10000))); // +0. Horizontal line
-        StdOut.println(
-                new Point(10000, 15000).slopeTo(new Point(10000, 10000))); // +0. Vertical line
+        StdOut.print(new Point(0, 0).compareTo(new Point(0, 0)));
     }
 }
