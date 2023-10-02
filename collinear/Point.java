@@ -165,6 +165,9 @@ public class Point implements Comparable<Point> {
             StdOut.print(new Point(1, 1).slopeTo(points[p]) + " ");
         StdOut.println();
 
-        StdOut.print(new Point(0, 0).compareTo(new Point(0, 0)));
+        StdOut.println(new Point(0, 0).slopeTo(new Point(0, 0)));
+        StdOut.println(new Point(100, 0).slopeTo(new Point(200, 0))); // horizontal slope
+        StdOut.println(new Point(100, 0).slopeTo(new Point(100, 200))); // vertical slope
+
     }
 }

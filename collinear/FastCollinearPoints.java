@@ -7,50 +7,65 @@ import java.util.Arrays;
 public class FastCollinearPoints {
     private LineSegment[] segments; // collinear line segments
     private int n = 0;              // number of line segments
-
-
+    
     public FastCollinearPoints(Point[] points) {
         if (points == null) throw new IllegalArgumentException();
-        for (int p = 1; p < points.length; p++)
-            if (points[0].compareTo(points[p]) == 0) throw new IllegalArgumentException();
+        for (int p = 0; p < points.length; p++)
+            if (points[p] == null) throw new IllegalArgumentException();
 
         // n choose 2 ways to construct line segments
         this.segments = new LineSegment[(points.length * (points.length - 1)) / 2];
 
-        // copy array to interate over
+        // copy array to iterate over
         Point[] pointsStatic = new Point[points.length];
         for (int i = 0; i < points.length; i++) pointsStatic[i] = points[i];
         Arrays.sort(pointsStatic);
 
+        // Check for duplicate points
+        for (int p = 0; p < pointsStatic.length - 1; p++) {
+            if (pointsStatic[p].compareTo(pointsStatic[p + 1]) == 0)
+                throw new IllegalArgumentException();
+        }
+
+        // copy array to sort by slopes over
+        Point[] pointsSlope = new Point[points.length];
+        for (int i = 0; i < points.length; i++) pointsSlope[i] = points[i];
+
         for (int p = 0; p < pointsStatic.length; p++) {
             Point origin = pointsStatic[p];
-            Arrays.sort(points, origin.slopeOrder());
+            Arrays.sort(pointsSlope, origin.slopeOrder());
 
             // debug
             // StdOut.println();
             // StdOut.println("Origin: " + origin);
-            // StdOut.println("Slope sort: " + Arrays.toString(points));
-            // for (Point r : points) StdOut.print(origin.slopeTo(r) + " ");
+            // StdOut.println("Slope sort: " + Arrays.toString(pointsSlope));
+            // for (Point r : pointsSlope) StdOut.print(origin.slopeTo(r) + " ");
             // StdOut.println();
 
             int lo = 1;
             int hi = 1;
 
-            double initSlope = origin.slopeTo(points[1]);
-            for (int q = 2; q < points.length; q++) {
-                double slope = origin.slopeTo(points[q]);
+            double initSlope = origin.slopeTo(pointsSlope[1]);
+            for (int q = 2; q < pointsSlope.length; q++) {
+                double slope = origin.slopeTo(pointsSlope[q]);
+                // Debug
+                // StdOut.println(
+                //         "q = " + q +
+                //                 " | slope = " + slope +
+                //                 " | initSlope = " + initSlope +
+                //                 " | lo = " + lo +
+                //                 " | hi = " + hi);
 
-                if (slope == initSlope) {
-                    hi += 1;
-                }
-                else {
+                if (slope == initSlope) hi += 1;
+
+                if (slope != initSlope || q == pointsSlope.length - 1) {
                     if (hi - lo >= 2) {
                         // if segment is length 3 then check if maximal points
                         Point[] segPoints = new Point[hi - lo + 2];
                         segPoints[0] = origin;
                         int segN = 1;
                         for (int j = lo; j <= hi; j++) {
-                            segPoints[segN++] = points[j];
+                            segPoints[segN++] = pointsSlope[j];
                         }
 
                         // debug
@@ -74,11 +89,8 @@ public class FastCollinearPoints {
                     lo = q;
                     hi = q;
                 }
-
-
             }
         }
-
     }
 
     public int numberOfSegments() {

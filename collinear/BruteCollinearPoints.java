@@ -9,13 +9,22 @@ public class BruteCollinearPoints {
     private int n = 0;              // number of line segments
 
     public BruteCollinearPoints(Point[] points) {
-        if (points == null) throw new IllegalArgumentException();
-        for (int p = 1; p < points.length; p++)
-            if (points[0].compareTo(points[p]) == 0) throw new IllegalArgumentException();
 
-        // StdOut.println(Arrays.toString(points));
-        Arrays.sort(points);
-        // StdOut.println(Arrays.toString(points));
+        if (points == null) throw new IllegalArgumentException();
+        for (int p = 0; p < points.length; p++)
+            if (points[p] == null) throw new IllegalArgumentException();
+
+        // copy array to iterate over
+        Point[] pointsCopy = new Point[points.length];
+        for (int i = 0; i < points.length; i++) pointsCopy[i] = points[i];
+
+        Arrays.sort(pointsCopy);
+
+        // check for duplicate points
+        for (int p = 0; p < pointsCopy.length - 1; p++) {
+            if (pointsCopy[p].compareTo(pointsCopy[p + 1]) == 0)
+                throw new IllegalArgumentException();
+        }
 
         // max no. of collinear points is n choose 2
         this.segments = new LineSegment[(points.length * (points.length - 1)) / 2];
@@ -30,9 +39,9 @@ public class BruteCollinearPoints {
                         // 1. the slopes between inner segments are equal
                         // 2. only form line segment if 4 points are in asc. order (excl. sub-segments, reverse order)
                         // 3. only pick maximal points
-                        double slopePQ = points[i].slopeTo(points[j]);
-                        double slopePR = points[i].slopeTo(points[k]);
-                        double slopePS = points[i].slopeTo(points[m]);
+                        double slopePQ = pointsCopy[i].slopeTo(pointsCopy[j]);
+                        double slopePR = pointsCopy[i].slopeTo(pointsCopy[k]);
+                        double slopePS = pointsCopy[i].slopeTo(pointsCopy[m]);
                         // StdOut.println(points[i].toString() + " " +
                         //                        points[j].toString() + " " +
                         //                        points[k].toString() + " " +
@@ -42,7 +51,7 @@ public class BruteCollinearPoints {
 
                         // If equal slopes then the maximal endpoints
                         if (equalSlope) {
-                            this.segments[n++] = new LineSegment(points[i], points[m]);
+                            this.segments[n++] = new LineSegment(pointsCopy[i], pointsCopy[m]);
                         }
                     }
     }
