@@ -1,4 +1,6 @@
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
 
@@ -61,12 +63,9 @@ public class Board {
 
                 // correct position
                 int col;
-                if (x % N == 0) {
-                    col = N - 1;
-                }
-                else {
-                    col = Math.max(x % N - 1, 0);
-                }
+                if (x % N == 0) col = N - 1;
+                else col = Math.max(x % N - 1, 0);
+
                 double row = Math.ceil((double) x / N) - 1;
                 dist = dist + (int) Math.abs(i - row) + Math.abs(j - col);
             }
@@ -78,7 +77,8 @@ public class Board {
     public boolean isGoal() {
         for (int i = 0; i < board[0].length; i++) {
             for (int j = 0; j < board[1].length; j++) {
-                if ((i + 1) * (j + 1) != board[i][j]) return false;
+                if (board[i][j] == 0) continue;
+                if (i * N + (j + 1) != board[i][j]) return false;
             }
         }
         return true;
@@ -98,7 +98,7 @@ public class Board {
 
     // all neighboring boards
     // public Iterable<Board> neighbors() {
-    public void neighbours() {
+    public Iterable<Board> neighbours() {
         // if corner then 2 neighbours
         // if centre of board then 4 neighbours
         // else middle (row or col) and on edge has 3 neighbours
@@ -107,26 +107,47 @@ public class Board {
         int[] idxBlank = getBlankTile();
         int row = idxBlank[0];
         int col = idxBlank[1];
+        // StdOut.println("Loc of blank: i = " + row + " j = " + col);
 
         if (row % N == 0 && col % N == 0) nNeighbours = 2;
         else if (row % N == 0 || col % N == 0) nNeighbours = 3;
         else nNeighbours = 4;
 
-        Board[] NeighbourBoard = new Board[nNeighbours];
+        Stack<Board> neighbourBoards = new Stack<Board>();
+        int[][] neighbourTiles = new int[N][N];
         int[] rowShift = { -1, 0, 1 };
         int[] colShift = { -1, 0, 1 };
 
         for (int i = 0; i < rowShift.length; i++) {
             for (int j = 0; j < colShift.length; j++) {
+                if (i == j) continue;
                 try {
-                    board[row - 1][col - 1] = board[row + rowShift[i] - 1][col + colShift[j] - 1];
-                    board[row + rowShift[i] - 1][col + colShift[j] - 1] = 0;
+                    // make copy of board to avoid modifying
+                    int[][] boardCopy = new int[N][N];
+                    for (int k = 0; k < board.length; k++)
+                        boardCopy[k] = board[k].clone();
+
+                    boardCopy[row - 1][col - 1] = board[row + rowShift[i] - 1][col + colShift[j]
+                            - 1];
+                    boardCopy[row + rowShift[i] - 1][col + colShift[j] - 1] = 0;
+
+                    // copy to neighbour tiles
+                    for (int k = 0; k < boardCopy.length; k++)
+                        neighbourTiles[k] = boardCopy[k].clone();
+
+                    // create new neighbour board
+                    Board neighbourBoard = new Board(neighbourTiles);
+
+                    // save to stack
+                    neighbourBoards.push(neighbourBoard);
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
+                    // StdOut.println("Skipped: i = " + i + " j = " + j);
                     continue;
                 }
             }
         }
+        return neighbourBoards;
     }
 
     private int[] getBlankTile() {
@@ -147,9 +168,31 @@ public class Board {
     }
 
     // a board that is obtained by exchanging any pair of tiles
-    // public Board twin() {
-    //
-    // }
+    public Board twin() {
+        int[] idxBlank = getBlankTile();
+        int row = idxBlank[0] - 1;
+        int col = idxBlank[1] - 1;
+
+        int[][] boardCopy = new int[N][N];
+        for (int k = 0; k < board.length; k++)
+            boardCopy[k] = board[k].clone();
+
+        while (true) {
+            int j = StdRandom.uniformInt(0, N);
+            int k = StdRandom.uniformInt(0, N);
+            int l = StdRandom.uniformInt(0, N);
+            int m = StdRandom.uniformInt(0, N);
+
+            if (j == l && k == m) continue;
+            if ((j == row && k == col) || (l == row && m == col)) continue;
+
+            int element = boardCopy[l][m];
+            boardCopy[l][m] = boardCopy[j][k];
+            boardCopy[j][k] = element;
+            break;
+        }
+        return new Board(boardCopy);
+    }
 
     // unit testing (not graded)
     public static void main(String[] args) {
@@ -157,9 +200,22 @@ public class Board {
         Board board = new Board(tiles);
         StdOut.print(board.toString());
         StdOut.println(board.hamming());   // expect 3
-
-
         StdOut.println(board.manhattan()); // expect 3
+        StdOut.println();
+
+        for (Board b : board.neighbours()) {
+            StdOut.println(b.toString());
+            StdOut.println();
+        }
+        StdOut.println(board.twin().toString());
+
+        StdOut.println("Board 2");
+        Board board2 = new Board(tiles);
+        StdOut.println(board.equals(board2));
+
+        StdOut.println("Board 3");
+        Board board3 = new Board(new int[][] { { 1, 2, 3 }, { 4, 0, 6 }, { 7, 8, 9 } });
+        StdOut.println(board3.isGoal());
     }
 
 }
