@@ -105,13 +105,14 @@ public class Board {
         int nNeighbours;
 
         int[] idxBlank = getBlankTile();
-        int row = idxBlank[0];
-        int col = idxBlank[1];
+        int row = idxBlank[0] - 1;
+        int col = idxBlank[1] - 1;
         // StdOut.println("Loc of blank: i = " + row + " j = " + col);
 
-        if (row % N == 0 && col % N == 0) nNeighbours = 2;
-        else if (row % N == 0 || col % N == 0) nNeighbours = 3;
+        if (row % (N - 1) == 0 && col % (N - 1) == 0) nNeighbours = 2;
+        else if (row % (N - 1) == 0 || col % (N - 1) == 0) nNeighbours = 3;
         else nNeighbours = 4;
+        // StdOut.println("nNeighbours: " + nNeighbours);
 
         Stack<Board> neighbourBoards = new Stack<Board>();
         int[][] neighbourTiles = new int[N][N];
@@ -120,16 +121,15 @@ public class Board {
 
         for (int i = 0; i < rowShift.length; i++) {
             for (int j = 0; j < colShift.length; j++) {
-                if (i == j) continue;
+                if (Math.abs(rowShift[i]) == Math.abs(colShift[j])) continue;
                 try {
                     // make copy of board to avoid modifying
                     int[][] boardCopy = new int[N][N];
                     for (int k = 0; k < board.length; k++)
                         boardCopy[k] = board[k].clone();
 
-                    boardCopy[row - 1][col - 1] = board[row + rowShift[i] - 1][col + colShift[j]
-                            - 1];
-                    boardCopy[row + rowShift[i] - 1][col + colShift[j] - 1] = 0;
+                    boardCopy[row][col] = board[row + rowShift[i]][col + colShift[j]];
+                    boardCopy[row + rowShift[i]][col + colShift[j]] = 0;
 
                     // copy to neighbour tiles
                     for (int k = 0; k < boardCopy.length; k++)
@@ -139,6 +139,7 @@ public class Board {
                     Board neighbourBoard = new Board(neighbourTiles);
 
                     // save to stack
+                    // StdOut.println("i: " + i + " j: " + j);
                     neighbourBoards.push(neighbourBoard);
                 }
                 catch (ArrayIndexOutOfBoundsException e) {
@@ -216,6 +217,15 @@ public class Board {
         StdOut.println("Board 3");
         Board board3 = new Board(new int[][] { { 1, 2, 3 }, { 4, 0, 6 }, { 7, 8, 9 } });
         StdOut.println(board3.isGoal());
+        StdOut.println();
+
+        StdOut.println("Board 4");
+        Board board4 = new Board(new int[][] { { 1, 0 }, { 2, 3 } });
+        StdOut.println(board4.toString());
+        for (Board b : board4.neighbours()) {
+            StdOut.println(b.toString());
+            StdOut.println();
+        }
     }
 
 }
