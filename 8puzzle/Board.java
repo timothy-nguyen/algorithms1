@@ -98,7 +98,7 @@ public class Board {
 
     // all neighboring boards
     // public Iterable<Board> neighbors() {
-    public Iterable<Board> neighbours() {
+    public Iterable<Board> neighbors() {
         // if corner then 2 neighbours
         // if centre of board then 4 neighbours
         // else middle (row or col) and on edge has 3 neighbours
@@ -197,35 +197,43 @@ public class Board {
 
     // unit testing (not graded)
     public static void main(String[] args) {
-        int[][] tiles = { { 0, 1, 3 }, { 4, 2, 5 }, { 7, 8, 9 } };
-        Board board = new Board(tiles);
-        StdOut.print(board.toString());
-        StdOut.println(board.hamming());   // expect 3
-        StdOut.println(board.manhattan()); // expect 3
-        StdOut.println();
+        // int[][] tiles = { { 0, 1, 3 }, { 4, 2, 5 }, { 7, 8, 9 } };
+        // Board board = new Board(tiles);
+        // StdOut.print(board.toString());
+        // StdOut.println(board.hamming());   // expect 3
+        // StdOut.println(board.manhattan()); // expect 3
+        // StdOut.println();
+        //
+        // for (Board b : board.neighbours()) {
+        //     StdOut.println(b.toString());
+        //     StdOut.println();
+        // }
+        // StdOut.println(board.twin().toString());
+        //
+        // StdOut.println("Board 2");
+        // Board board2 = new Board(tiles);
+        // StdOut.println(board.equals(board2));
+        //
+        // StdOut.println("Board 3");
+        // Board board3 = new Board(new int[][] { { 1, 2, 3 }, { 4, 0, 6 }, { 7, 8, 9 } });
+        // StdOut.println(board3.isGoal());
+        // StdOut.println();
+        //
+        // StdOut.println("Board 4");
+        // Board board4 = new Board(new int[][] { { 1, 0 }, { 2, 3 } });
+        // StdOut.println(board4.toString());
+        // for (Board b : board4.neighbours()) {
+        //     StdOut.println(b.toString());
+        //     StdOut.println();
+        // }
 
-        for (Board b : board.neighbours()) {
+        Board board = new Board(new int[][] { { 1, 2, 3 }, { 4, 6, 0 }, { 7, 5, 8 } });
+        for (Board b : board.neighbors())
             StdOut.println(b.toString());
-            StdOut.println();
-        }
-        StdOut.println(board.twin().toString());
 
-        StdOut.println("Board 2");
-        Board board2 = new Board(tiles);
-        StdOut.println(board.equals(board2));
-
-        StdOut.println("Board 3");
-        Board board3 = new Board(new int[][] { { 1, 2, 3 }, { 4, 0, 6 }, { 7, 8, 9 } });
-        StdOut.println(board3.isGoal());
-        StdOut.println();
-
-        StdOut.println("Board 4");
-        Board board4 = new Board(new int[][] { { 1, 0 }, { 2, 3 } });
-        StdOut.println(board4.toString());
-        for (Board b : board4.neighbours()) {
+        Board board2 = new Board(new int[][] { { 2, 3 }, { 0, 1 } });
+        for (Board b : board2.neighbors())
             StdOut.println(b.toString());
-            StdOut.println();
-        }
     }
 
 }
