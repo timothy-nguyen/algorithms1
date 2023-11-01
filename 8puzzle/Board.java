@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
 
@@ -178,20 +177,54 @@ public class Board {
         for (int k = 0; k < board.length; k++)
             boardCopy[k] = board[k].clone();
 
-        while (true) {
-            int j = StdRandom.uniformInt(0, N);
-            int k = StdRandom.uniformInt(0, N);
-            int l = StdRandom.uniformInt(0, N);
-            int m = StdRandom.uniformInt(0, N);
+        int[] arrayIdx = new int[board.length];
+        for (int i = 0; i < board.length; i++) arrayIdx[i] = i;
 
-            if (j == l && k == m) continue;
-            if ((j == row && k == col) || (l == row && m == col)) continue;
-
-            int element = boardCopy[l][m];
-            boardCopy[l][m] = boardCopy[j][k];
-            boardCopy[j][k] = element;
-            break;
+        int k = 0;
+        int l = 0;
+        int m = 0;
+        int n = 0;
+        outerloop:
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (arrayIdx[i] == row) continue;
+                if (arrayIdx[j] == col) continue;
+                k = arrayIdx[i];
+                l = arrayIdx[j];
+                break outerloop;
+            }
         }
+
+        outerloop:
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (arrayIdx[i] == row && arrayIdx[i] == k) continue;
+                if (arrayIdx[j] == col && arrayIdx[j] == l) continue;
+                m = arrayIdx[i];
+                n = arrayIdx[j];
+                break outerloop;
+            }
+        }
+
+
+        int element = boardCopy[k][l];
+        boardCopy[k][l] = boardCopy[m][n];
+        boardCopy[m][n] = element;
+
+        // while (true) {
+        //     int j = StdRandom.uniformInt(0, N);
+        //     int k = StdRandom.uniformInt(0, N);
+        //     int l = StdRandom.uniformInt(0, N);
+        //     int m = StdRandom.uniformInt(0, N);
+        //
+        //     if (j == l && k == m) continue;
+        //     if ((j == row && k == col) || (l == row && m == col)) continue;
+        //
+        //     int element = boardCopy[l][m];
+        //     boardCopy[l][m] = boardCopy[j][k];
+        //     boardCopy[j][k] = element;
+        //     break;
+        // }
         return new Board(boardCopy);
     }
 
@@ -228,12 +261,15 @@ public class Board {
         // }
 
         Board board = new Board(new int[][] { { 1, 2, 3 }, { 4, 6, 0 }, { 7, 5, 8 } });
+        StdOut.println(board.toString());
+        StdOut.println(board.twin().toString());
         for (Board b : board.neighbors())
             StdOut.println(b.toString());
 
         Board board2 = new Board(new int[][] { { 2, 3 }, { 0, 1 } });
+        StdOut.println(board2.toString());
+        StdOut.println(board2.twin().toString());
         for (Board b : board2.neighbors())
             StdOut.println(b.toString());
     }
-
 }
