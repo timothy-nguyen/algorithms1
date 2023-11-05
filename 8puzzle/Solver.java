@@ -7,6 +7,7 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.Comparator;
@@ -14,17 +15,19 @@ import java.util.Comparator;
 public class Solver {
     private Board initial;
     private int n = 0; // no. moves to solve board
-    private Queue<Board> solutionStack;
+    private SearchNode solution;
 
     private class SearchNode {
         private Board board;
         private int manhattan;
-        private int nMoves; // no. moves to reach search node
+        private int nMoves;  // no. moves to reach search node
+        private SearchNode prev;  // previous board
 
-        public SearchNode(Board board, int n) {
+        public SearchNode(Board board, int n, SearchNode prev) {
             this.board = board;
             this.nMoves = n;
             this.manhattan = board.manhattan();
+            this.prev = prev;
         }
     }
 
@@ -35,6 +38,8 @@ public class Solver {
             if ((a.manhattan + a.nMoves) - (b.manhattan + b.nMoves) < 0) return -1;
             if (a.manhattan - b.manhattan > 0) return 1;
             if (a.manhattan - b.manhattan < 0) return -1;
+            if (a.nMoves - b.nMoves > 0) return 1;
+            if (a.nMoves - b.nMoves < 0) return -1;
             return 0;
         }
     }
@@ -43,27 +48,31 @@ public class Solver {
     public Solver(Board initial) {
         if (initial == null) throw new IllegalArgumentException();
         this.initial = initial;
-        this.solutionStack = new Queue<Board>();
 
         // Initialise game tree
         MinPQ<SearchNode> tree = new MinPQ<SearchNode>(new PriorityFn());
-        tree.insert(new SearchNode(initial, 0));
+        tree.insert(new SearchNode(initial, 0, null));
 
         if (isSolvable()) {
             while (true) {
                 SearchNode minBoard = tree.min();
+                this.n = minBoard.nMoves;
+                this.solution = minBoard;
+
+                // debug
                 // StdOut.println("Min board: ");
                 // StdOut.println("manhattan: " + minBoard.manhattan);
                 // StdOut.println("moves: " + minBoard.nMoves);
                 // StdOut.println("priority: " + (int) (minBoard.nMoves + minBoard.board.manhattan()));
                 // StdOut.println(minBoard.board.toString());
 
-                this.solutionStack.enqueue(minBoard.board);
                 tree.delMin();
 
                 for (Board nb : minBoard.board.neighbors()) {
                     if (nb.equals(minBoard.board)) continue;
-                    tree.insert(new SearchNode(nb, minBoard.nMoves + 1));
+                    tree.insert(new SearchNode(nb, minBoard.nMoves + 1, minBoard));
+
+                    // debug
                     // StdOut.println("Neighbour: ");
                     // StdOut.println("manhattan: " + nb.manhattan());
                     // StdOut.println("moves: " + (int) (minBoard.nMoves + 1));
@@ -76,7 +85,7 @@ public class Solver {
             }
         }
         else {
-            this.solutionStack = null;
+            this.solution = null;
             this.n = -1;
         }
     }
@@ -90,12 +99,13 @@ public class Solver {
         MinPQ<SearchNode> tree1 = new MinPQ<SearchNode>(new PriorityFn());
         MinPQ<SearchNode> tree2 = new MinPQ<SearchNode>(new PriorityFn());
 
-        tree1.insert(new SearchNode(this.initial, 0));
-        tree2.insert(new SearchNode(this.initial.twin(), 0));
+        tree1.insert(new SearchNode(this.initial, 0, null));
+        tree2.insert(new SearchNode(this.initial.twin(), 0, null));
 
         // Add neighbours to queue
         while (true) {
             SearchNode minBoard1 = tree1.min();
+            // this.n = minBoard1.nMoves;
             SearchNode minBoard2 = tree2.min();
 
             solution1.enqueue(minBoard1.board);
@@ -106,12 +116,13 @@ public class Solver {
 
             for (Board nb : minBoard1.board.neighbors()) {
                 if (nb.equals(minBoard1.board)) continue;
-                tree1.insert(new SearchNode(nb, minBoard1.nMoves + 1));
+                tree1.insert(new SearchNode(nb, minBoard1.nMoves + 1, null));
             }
+            // this.n += 1;
 
             for (Board nb : minBoard2.board.neighbors()) {
                 if (nb.equals(minBoard2.board)) continue;
-                tree2.insert(new SearchNode(nb, minBoard2.nMoves + 1));
+                tree2.insert(new SearchNode(nb, minBoard2.nMoves + 1, null));
             }
 
             if (minBoard1.board.isGoal()) return true;
@@ -126,7 +137,14 @@ public class Solver {
 
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution() {
-        return this.solutionStack;
+        if (this.solution == null) return null;
+        Stack<Board> stack = new Stack<Board>();
+        SearchNode current = this.solution;
+        while (current != null) {
+            stack.push(current.board);
+            current = current.prev;
+        }
+        return stack;
     }
 
     // test client (see below)

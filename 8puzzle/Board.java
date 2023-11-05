@@ -177,35 +177,28 @@ public class Board {
         for (int k = 0; k < board.length; k++)
             boardCopy[k] = board[k].clone();
 
-        int[] arrayIdx = new int[board.length];
-        for (int i = 0; i < board.length; i++) arrayIdx[i] = i;
-
-        int k = 0;
-        int l = 0;
-        int m = 0;
-        int n = 0;
+        int k = 0, l = 0, m = 0, n = 0;
         outerloop:
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (arrayIdx[i] == row) continue;
-                if (arrayIdx[j] == col) continue;
-                k = arrayIdx[i];
-                l = arrayIdx[j];
-                break outerloop;
+        for (int i = 0; i <= board.length; i++) {
+            for (int j = 0; j <= board.length; j++) {
+                if (i != row || j != col) {
+                    k = i;
+                    l = j;
+                    break outerloop;
+                }
             }
         }
 
         outerloop:
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (arrayIdx[i] == row && arrayIdx[i] == k) continue;
-                if (arrayIdx[j] == col && arrayIdx[j] == l) continue;
-                m = arrayIdx[i];
-                n = arrayIdx[j];
-                break outerloop;
+                if ((i != row || j != col) && (i != k || j != l)) {
+                    m = i;
+                    n = j;
+                    break outerloop;
+                }
             }
         }
-
 
         int element = boardCopy[k][l];
         boardCopy[k][l] = boardCopy[m][n];
@@ -225,7 +218,10 @@ public class Board {
         //     boardCopy[j][k] = element;
         //     break;
         // }
-        return new Board(boardCopy);
+        return new
+
+                Board(boardCopy);
+
     }
 
     // unit testing (not graded)
@@ -266,10 +262,14 @@ public class Board {
         for (Board b : board.neighbors())
             StdOut.println(b.toString());
 
-        Board board2 = new Board(new int[][] { { 2, 3 }, { 0, 1 } });
+        Board board2 = new Board(new int[][] { { 3, 1 }, { 2, 0 } });
         StdOut.println(board2.toString());
         StdOut.println(board2.twin().toString());
-        for (Board b : board2.neighbors())
-            StdOut.println(b.toString());
+        // for (Board b : board2.neighbors())
+        //     StdOut.println(b.toString());
+
+        // Board board3 = new Board(new int[][] { { 2, 1, 3 }, { 4, 0, 5 }, { 7, 8, 6 } });
+        // StdOut.println(board3.toString());
+        // StdOut.println(board3.twin().toString());
     }
 }
